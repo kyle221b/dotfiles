@@ -11,6 +11,7 @@ export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 export BAT_PAGER="less -RF"
 export BAT_THEME="gruvbox-dark"
 export BAT_STYLE="numbers,grid,changes"
+export HOMEBREW_BUNDLE_FILE_GLOBAL="$HOME/.config/brew/Brewfile"
 
 # Rust bin
 export PATH=$PATH:$HOME/.cargo/bin
@@ -62,7 +63,7 @@ if ! zgenom saved; then
 fi
 
 # aliases
-alias dotfiles='/usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
+alias dot='/usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
 alias soz="source ~/.zshrc"
 alias vim=nvim
 alias brewi="brew install"
