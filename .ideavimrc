@@ -1,0 +1,72 @@
+set surround
+set sneak
+set NERDTree
+Plug 'vim-matchit'
+Plug 'dbakker/vim-paragraph-motion'
+Plug 'tpope/vim-commentary'
+
+set nu
+set relativenumber
+
+set expandtab
+set tabstop = 2
+set softtabstop = 2
+set shiftwidth = 2
+
+set smartindent
+
+set swapfile = false
+set backup = false
+
+set hlsearch = false
+set incsearch
+set grepprg = "rg"
+
+set scrolloff=8
+
+let mapleader = " "
+
+" Intellij action mappings
+nnoremap gd :action GotoDeclaration<CR>
+nnoremap gt :action GotoTypeDeclaration<CR>
+nnoremap gi :action GotoImplementation<CR>
+nnoremap gr :action ShowUsages<CR>
+nnoremap <leader>t :action ActivateTerminalToolWindow<CR>
+
+" Formatting
+nnoremap <CR> :action ReformatCode<CR> :write<CR>
+nnoremap <leader>cf :action ReformatCode<CR>
+
+" Commenting
+nnoremap <leader>cc :action CommentByLineComment<CR>
+nnoremap <leader>cb :action CommentByBlockComment<CR>
+
+" Folding
+nnoremap zo :action ExpandRegion<CR>
+nnoremap zc :action CollapseRegion<CR>
+
+
+" Regular mappings
+nnoremap Y y$
+
+cnoremap <C-a> <C-b>
+cnoremap <M-b> <S-Left>
+cnoremap <M-f> <S-Right>
+cnoremap <M-h> <Left>
+cnoremap <M-l> <Right>
+
+vnoremap . :norm.<CR>
+
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
+
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
+nnoremap n nzzzv
+nnoremap N Nzzzv
+
+nnoremap [t gT
+nnoremap ]t gt
+
+xnoremap <leader>p "_dP'
+
