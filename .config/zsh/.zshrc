@@ -1,29 +1,6 @@
-source ~/.bash_profile
-eval "$(starship init zsh)"
-
-# Brew autocompletions
 FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 
-# Env
-export VISUAL=nvim
-export PAGER=bat
-export MANPAGER="sh -c 'col -bx | bat -l man -p'"
-export BAT_PAGER="less -RF"
-export BAT_THEME="gruvbox-dark"
-export BAT_STYLE="numbers,grid,changes"
-export HOMEBREW_BUNDLE_FILE_GLOBAL="$HOME/.config/brew/Brewfile"
-
-# Rust bin
-export PATH=$PATH:$HOME/.cargo/bin
-
-# Go bin
-export PATH=$PATH:$HOME/go/bin
-
-# usr .local bin
-export PATH=$PATH:$HOME/.local/bin
-
-# Intellij
-export PATH=$PATH:/Applications/IntelliJ\ IDEA\ CE.app/Contents/MacOS:.
+eval "$(starship init zsh)"
 
 # load zgenom
 source "${HOME}/.zgenom/zgenom.zsh"
@@ -123,11 +100,9 @@ source <(ddt completion zsh)
 source <(av completion zsh)
 
 # fnm
-export PATH="/Users/kyle.baylor/Library/Application Support/fnm:$PATH"
 eval "`fnm env`"
 
 # jenv
-export PATH="$HOME/.jenv/bin:$PATH"
 eval "$(jenv init -)"
 
 # fzf
@@ -180,29 +155,3 @@ function coords {
   echo $grpc_coordinates
 }
 
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/opt/homebrew/Caskroom/miniconda/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
-        . "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
-    else
-        export PATH="/opt/homebrew/Caskroom/miniconda/base/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-
-
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-export PATH=$PATH:$HOME/.maestro/bin
-
-# DD specific functions
-
-function nectar-connect {
-  broker=$(kgp -n argo-search-nectar | rg broker | head -n 1 | choose 0)
-  port=${1:-50051}
-  k port-forward $broker $port:50051
-}
