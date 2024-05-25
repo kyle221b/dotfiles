@@ -17,7 +17,7 @@ return {
 		config = function()
 			local telescope = require("telescope.builtin")
 
-			vim.api.nvim_create_autocmd("BufWrite", {
+			vim.api.nvim_create_autocmd("BufWritePre", {
 				desc = "Format on save",
 				callback = function()
 					vim.lsp.buf.format({ async = false })

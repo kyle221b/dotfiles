@@ -41,7 +41,7 @@ fi
 
 # aliases
 alias dot='/usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
-alias soz="source ~/.zshrc"
+alias soz="source ~/.config/zsh/.zshrc"
 alias vim=nvim
 alias brewi="brew install"
 alias caski="brewi --cask"
@@ -107,6 +107,11 @@ eval "$(jenv init -)"
 
 # fzf
 source ~/Projects/personal/fzf-git.sh/fzf-git.sh
+
+function dotsync {
+  dot commit -a -m ${1-"Sync dotfiles"}
+  dot push
+}
 
 function pws {
   cd ~/Projects/personal/$1
