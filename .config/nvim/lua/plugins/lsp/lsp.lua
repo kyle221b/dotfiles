@@ -76,9 +76,10 @@ return {
       })
 
       local lsp_capabilities = require("cmp_nvim_lsp").default_capabilities()
+      local lspconfig = require("lspconfig")
 
       local default_setup = function(server)
-        require("lspconfig")[server].setup({
+        lspconfig[server].setup({
           capabilities = lsp_capabilities,
         })
       end
@@ -88,8 +89,35 @@ return {
         ensure_installed = { "tsserver", "lua_ls" },
         handlers = {
           default_setup,
+          ruff = function()
+            lspconfig.ruff.setup({
+              capabilities = lsp_capabilities,
+              on_attach = function(client)
+                if client.name == "ruff" then
+                  -- Disable hover in favor of Pyright
+                  client.server_capabilities.hoverProvider = false
+                end
+              end,
+            })
+          end,
+          pyright = function()
+            lspconfig.pyright.setup({
+              settings = {
+                pyright = {
+                  -- Using Ruff's import organizer
+                  disableOrganizeImports = true,
+                },
+                python = {
+                  analysis = {
+                    -- Ignore all files for analysis to exclusively use Ruff for linting
+                    ignore = { "*" },
+                  },
+                },
+              },
+            })
+          end,
           lua_ls = function()
-            require("lspconfig").lua_ls.setup({
+            lspconfig.lua_ls.setup({
               capabilities = lsp_capabilities,
               Lua = {
                 runtime = {
