@@ -9,6 +9,12 @@ return {
     },
     config = function()
       require("telescope").setup({
+        mappings = {
+          i = {
+            ["<c-h>"] = "which_key",
+            ["<c-q>"] = require("telescope.actions").smart_send_to_qflist,
+          },
+        },
         extensions = {
           undo = {
             use_delta = true,

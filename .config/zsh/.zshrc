@@ -11,29 +11,27 @@ if ! zgenom saved; then
   zgenom ohmyzsh
 
   # plugins
-  zgenom ohmyzsh plugins/git
-  zgenom ohmyzsh plugins/sudo
+  zgenom ohmyzsh kube-ps1
   zgenom ohmyzsh plugins/aliases
   zgenom ohmyzsh plugins/brew
   zgenom ohmyzsh plugins/docker
   zgenom ohmyzsh plugins/fd
-  zgenom ohmyzsh plugins/ripgrep
   zgenom ohmyzsh plugins/fzf
+  zgenom ohmyzsh plugins/git
+  zgenom ohmyzsh plugins/poetry
+  zgenom ohmyzsh plugins/ripgrep
   zgenom ohmyzsh plugins/zoxide
-  zgenom ohmyzsh plugins/terraform
-  zgenom ohmyzsh kube-ps1
 
-  zgenom load zsh-users/zsh-syntax-highlighting
-  zgenom load zsh-users/zsh-completions
-  zgenom load zsh-users/zsh-autosuggestions
-  zgenom load zsh-users/zsh-history-substring-search
   zgenom load MichaelAquilina/zsh-you-should-use
   zgenom load dbz/kube-aliases
+  zgenom load zsh-users/zsh-autosuggestions
+  zgenom load zsh-users/zsh-completions
+  zgenom load zsh-users/zsh-history-substring-search
+  zgenom load zsh-users/zsh-syntax-highlighting
 
   # other completions
-  zgenom load zap-zsh/fnm
   zgenom load Downager/zsh-helmfile
-  zgenom load bonnefoa/kubectl-fzf
+  zgenom load zap-zsh/fnm
 
   # generate the init script from plugins above
   zgenom save
@@ -43,6 +41,8 @@ fi
 alias dot='/usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
 alias soz="source ~/.config/zsh/.zshrc"
 alias vim=nvim
+alias vimz="vim ~/.config/zsh/.zshrc"
+alias batz="bat ~/.config/zsh/.zshrc"
 alias brewi="brew install"
 alias caski="brewi --cask"
 alias ddt=dd-toolbox
@@ -71,6 +71,7 @@ alias kctx="kubectx"
 alias kns="kubens"
 alias kpf="k port-forward"
 alias keit="k exec -it"
+alias kzp="kgp | tail -n +2 | choose 0 | fzf -0 --height=~40%"
 
 alias avs="av stack"
 alias avsn="avs next"
@@ -108,6 +109,9 @@ eval "$(jenv init -)"
 # fzf
 source ~/Projects/personal/fzf-git.sh/fzf-git.sh
 
+# direnv
+eval "$(direnv hook zsh)"
+
 function dotsync {
   dot commit -a -m ${1-"Sync dotfiles"}
   dot push
@@ -125,12 +129,25 @@ function ghcr {
   ws && gh repo clone doordash/$1 && cd $1
 }
 
+function gzsw() {
+  local branches branch
+  branches=$(git --no-pager branch -vv) &&
+  branch=$(echo "$branches" | fzf --height=~100% +m) &&
+  git switch $(echo "$branch" | awk '{print $1}' | sed "s/.* //")
+}
+
 function tsh-login {
   tsh kube ls | fzf | choose 0 | xargs tsh kube login
 }
 
 function ktl {
   kl -f $1 | bat --style=plain --paging=never -l log
+}
+
+function keitb {
+  pod=$(kzp)
+  echo "Running bash in pod $pod"
+  keit $pod -- bash
 }
 
 function sbd {

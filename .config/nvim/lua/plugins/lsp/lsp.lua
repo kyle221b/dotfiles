@@ -57,20 +57,7 @@ return {
             { buffer = bufnr, desc = "Signature help" }
           )
           vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { buffer = bufnr, desc = "Rename" })
-          vim.keymap.set({ "n", "x" }, "<leader><C-f>", function()
-            vim.lsp.buf.format({ async = true })
-          end, { buffer = bufnr, desc = "Format" })
           vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-
-          vim.api.nvim_create_autocmd("BufWritePre", {
-            desc = "Format on save",
-            buffer = bufnr,
-            group = group,
-            callback = function()
-              vim.lsp.buf.format({ async = false })
-            end,
-          })
-
           -- note: diagnostics are not exclusive to lsp servers
         end,
       })

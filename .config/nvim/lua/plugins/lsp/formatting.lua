@@ -4,7 +4,7 @@ return {
 	cmd = { "ConformInfo" },
 	keys = {
 		{
-			"<leader>fmt",
+			"<leader><C-f>",
 			function()
 				require("conform").format({ async = true, lsp_fallback = true })
 			end,
@@ -19,12 +19,13 @@ return {
 	opts = {
 		formatters_by_ft = {
 			lua = { "stylua" },
-			-- Conform will run multiple formatters sequentially
-			python = { "isort", "black" },
-			-- Use a sub-list to run only the first available formatter
+			python = { "ruff_format", "ruff_fix", "ruff_organize_imports" },
+			go = { "goimports", "gofmt" },
 			javascript = { { "eslint_d", "eslint", "prettierd", "prettier" } },
 			typescript = { { "eslint_d", "eslint", "prettierd", "prettier" } },
 			json = { "prettier" },
+			sh = { "shfmt" },
+			sql = { "sqlfmt" },
 			-- Use the "*" filetype to run formatters on all filetypes.
 			["*"] = { "codespell" },
 			-- Use the "_" filetype to run formatters on filetypes that don't
