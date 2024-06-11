@@ -1,5 +1,6 @@
 layout_anaconda() {
-  local ACTIVATE="${HOME}/miniconda3/bin/activate"
+  local ANACONDA_HOME="/opt/homebrew/Caskroom/miniconda/base"
+  local ACTIVATE="${ANACONDA_HOME}/bin/activate"
 
   if [ -n "$1" ]; then
     # Explicit environment name from layout command.

@@ -25,7 +25,6 @@ return {
 			typescript = { { "eslint_d", "eslint", "prettierd", "prettier" } },
 			json = { "prettier" },
 			sh = { "shfmt" },
-			sql = { "sqlfmt" },
 			-- Use the "*" filetype to run formatters on all filetypes.
 			["*"] = { "codespell" },
 			-- Use the "_" filetype to run formatters on filetypes that don't

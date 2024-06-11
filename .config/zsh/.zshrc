@@ -42,6 +42,8 @@ alias dot='/usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
 alias soz="source ~/.config/zsh/.zshrc"
 alias vim=nvim
 alias vimz="vim ~/.config/zsh/.zshrc"
+alias vimc="cd ~/.config && vim"
+alias vimcv="cd ~/.config/nvim && vim"
 alias batz="bat ~/.config/zsh/.zshrc"
 alias brewi="brew install"
 alias caski="brewi --cask"
@@ -127,6 +129,11 @@ function ws {
 
 function ghcr {
   ws && gh repo clone doordash/$1 && cd $1
+}
+
+function gza() {
+  local files branch
+  g ls-files -d -m -o --exclude-standard | fzf --height=~100% -m | xargs git add
 }
 
 function gzsw() {
