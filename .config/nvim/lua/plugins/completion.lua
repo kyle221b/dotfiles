@@ -4,25 +4,6 @@ return {
     version = "v2.*",
     build = "make install_jsregexp",
     dependencies = { "rafamadriz/friendly-snippets" },
-    config = function()
-      local ls = require("luasnip")
-
-      vim.keymap.set({ "i", "s" }, "<c-k>", function()
-        if ls.jumpable(1) then
-          ls.jump(1)
-        end
-      end, { silent = true })
-
-      vim.keymap.set({ "i", "s" }, "<c-j>", function()
-        if ls.jumpable(-1) then
-          ls.jump(-1)
-        end
-      end, { silent = true })
-    end,
-  },
-  {
-    "saghen/blink.compat",
-    version = "*",
   },
   {
     "saghen/blink.cmp",

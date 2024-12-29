@@ -62,7 +62,11 @@ return {
             ["il"] = { query = "@loop.inner", desc = "Select inside loop" },
             ["ab"] = { query = "@block.outer", desc = "Select around block" },
             ["ib"] = { query = "@block.inner", desc = "Select inside block" },
-          }
+          },
+          selection_modes = {
+            ['@function.outer'] = 'V',
+            ['@class.outer'] = 'V',
+          },
         },
         move = {
           enable = true,
