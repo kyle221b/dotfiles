@@ -50,6 +50,7 @@ alias caski="brewi --cask"
 alias ddt=dd-toolbox
 alias obsidian="vim ~/Documents/vault"
 alias pip=pip3
+alias uuid="uuidgen | tr '[:upper:]' '[:lower:]' | pbcopy"
 
 alias cd=z
 alias ls="eza"
@@ -65,15 +66,24 @@ function gswr {
   # Reset current branch to it's upstream ref
   gswC $(git_current_branch) $(grp @{u})
 }
+function gzsw {
+  gsw $(g branch -a | fzff)
+}
+
+alias docker-compose="docker compose"
 
 alias t="tmux"
+
+
+alias fzff="fzf -0 --height=~40%" # FZF friendly
 
 alias k="kubectl"
 alias kctx="kubectx"
 alias kns="kubens"
 alias kpf="k port-forward"
 alias keit="k exec -it"
-alias kzp="kgp | tail -n +2 | choose 0 | fzf -0 --height=~40%"
+alias kzp="kgp | tail -n +2 | choose 0 | fzff"
+alias kzs="kgs | tail -n +2 | choose 0 | fzff"
 
 alias avs="av stack"
 alias avsn="avs next"
@@ -92,15 +102,33 @@ function avssf {
 }
 
 alias db="devbox"
+alias dbl="$HOME/Projects/devbox-cli/dist/devbox-cli_0.dev_darwin_arm64/devbox-cli"
 alias dbs="db setup"
 alias dbr="db run"
+alias dbt="db teardown"
+alias dbdv="db runtime-dv"
+alias dbd="db doctor"
+alias dbw="db workspace"
 alias dbsg="dbs geo-web"
 alias dbrg="dbr geo-web"
+alias dbtg="dbt geo-web"
+alias dbsgr="dbs geo-web-remote"
+alias dbrgr="dbr geo-web-remote"
+alias dbtgr="dbt geo-web-remote"
+
+alias ts="tailscale"
+alias tsu="ts up"
+alias tsd="ts down"
+
+alias tf="terraform"
+
+alias kill-grpc="lsof -i :50051 | rg \"LISTEN|ESTABLISHED\" | choose 1 | xargs kill -9"
 
 # Completions
 # zstyle ':completion:*' use-cache on
 source <(ddt completion zsh)
 source <(av completion zsh)
+source <(tailscale completion zsh)
 
 # fnm
 eval "`fnm env`"
@@ -138,13 +166,51 @@ function gza() {
 
 function gzsw() {
   local branches branch
-  branches=$(git --no-pager branch -vv) &&
-  branch=$(echo "$branches" | fzf --height=~100% +m) &&
+  branches=$(git --no-pager branch -vv)
+  branch=$(echo "$branches" | fzf --height=~100% +m)
   git switch $(echo "$branch" | awk '{print $1}' | sed "s/.* //")
+}
+
+function gzb() {
+  local branches branch
+  branches=$(git --no-pager branch -vv)
+  echo "$branches" | fzf --height=~100% | awk '{print $1}'
 }
 
 function tsh-login {
   tsh kube ls | fzf | choose 0 | xargs tsh kube login
+}
+
+function sandbox {
+  tsh kube login sandbox-cell-001.prod-main-us-west-2
+}
+
+function sandbox2 {
+  tsh kube login sandbox-cell-002.prod-main-us-west-2
+}
+
+function sandbox3 {
+  tsh kube login sandbox-cell-003.prod-main-us-west-2
+}
+
+function sandbox4 {
+  tsh kube login sandbox-cell-004.prod-main-us-west-2
+}
+
+function cell1 {
+  tsh kube login cell-001-00.cell-001.prod-main-us-west-2
+}
+
+function cell2 {
+  tsh kube login cell-002-00.cell-002.prod-main-us-west-2
+}
+
+function cell3 {
+  tsh kube login cell-003-00.cell-003.prod-main-us-west-2
+}
+
+function cell4 {
+  tsh kube login cell-004-00.cell-004.prod-main-us-west-2
 }
 
 function ktl {
@@ -159,8 +225,9 @@ function keitb {
 
 function sbd {
   pod_name=$(kgp | rg $1 | choose 0)
+  port=${2-50051}
   echo "Setting up port-forwarding for pod $pod_name"
-  k port-forward $pod_name 50051 &
+  k port-forward $pod_name $port &
   trap "kill -INT -$!" INT
   ktl $pod_name
 }
@@ -182,5 +249,16 @@ function coords {
   coordinates=${1-$(pbpaste)}
   grpc_coordinates=$(echo $coordinates | jq -R 'split(",") | map(gsub("^ +| +$";"") | tonumber | {"value":.}) | {"lat":.[0], "lng":.[1]}')
   echo $grpc_coordinates
+}
+
+function geo-client {
+  vault kv list secret_v2/geo-intelligence/geo-intelligence/web | tail -n +3 | xargs -I{} vault kv get -format=json secret_v2/geo-intelligence/geo-intelligence/web/{} | jq '.data.data | map_values(fromjson) | to_entries | map({ key: .key, name: .value.name })[0]' 2>/dev/null | rg -B 1 -A 2 $1
+}
+
+function nectar-update {
+  for document_id in ${(f)@}; do
+    echo "Upserting document $document_id"
+    echo "{ \"document_id\": \"$document_id\", \"change_type\": \"upsert\" }" | kcat -F ~/kafka/production-02/kcat.properties -t geo-intelligence-platform__nectar-document-updates -P
+  done
 }
 

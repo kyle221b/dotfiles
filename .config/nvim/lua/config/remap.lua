@@ -22,12 +22,14 @@ vim.keymap.set("n", "]t", "gt")
 
 vim.keymap.set("x", "<leader>p", '"_dP')
 
+vim.keymap.set("n", "[q", function() vim.cmd("cprev") end, { desc = "Previous quickfix" })
+vim.keymap.set("n", "]q", function() vim.cmd("cprev") end, { desc = "Next quickfix" })
 vim.keymap.set("n", "<M-j>", function()
-	for _, win in pairs(vim.fn.getwininfo()) do
-		if win["quickfix"] == 1 then
-			vim.cmd("ccl")
-			return
-		end
-		vim.cmd("copen")
-	end
+  for _, win in pairs(vim.fn.getwininfo()) do
+    if win["quickfix"] == 1 then
+      vim.cmd("ccl")
+      return
+    end
+  end
+  vim.cmd("copen")
 end, { desc = "Toggle quickfix" })

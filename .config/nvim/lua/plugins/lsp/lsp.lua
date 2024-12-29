@@ -9,7 +9,7 @@ return {
     cmd = { "LspInfo", "LspInstall", "LspStart" },
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-      { "hrsh7th/cmp-nvim-lsp" },
+      { "saghen/blink.cmp" },
       { "williamboman/mason-lspconfig.nvim" },
       { "folke/neodev.nvim",                opts = {} },
       { "j-hui/fidget.nvim" },
@@ -27,7 +27,6 @@ return {
         callback = function(event)
           local bufnr = event.buf
           local opts = { buffer = bufnr }
-          local group = vim.api.nvim_create_augroup("lsp", { clear = true })
 
           -- these will be buffer-local keybindings
           -- because they only work if you have an active language server
@@ -50,19 +49,13 @@ return {
             telescope.lsp_type_definitions,
             { buffer = bufnr, desc = "Go to type definitions" }
           )
-          vim.keymap.set(
-            { "n", "i" },
-            "<C-k>",
-            vim.lsp.buf.signature_help,
-            { buffer = bufnr, desc = "Signature help" }
-          )
           vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { buffer = bufnr, desc = "Rename" })
           vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
           -- note: diagnostics are not exclusive to lsp servers
         end,
       })
 
-      local lsp_capabilities = require("cmp_nvim_lsp").default_capabilities()
+      local lsp_capabilities = require("blink.cmp").get_lsp_capabilities()
       local lspconfig = require("lspconfig")
 
       local default_setup = function(server)
@@ -73,7 +66,7 @@ return {
 
       require("mason").setup({})
       require("mason-lspconfig").setup({
-        ensure_installed = { "tsserver", "lua_ls" },
+        ensure_installed = { "lua_ls" },
         handlers = {
           default_setup,
           ruff = function()

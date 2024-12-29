@@ -16,4 +16,5 @@ require("lazy").setup({
 	{ import = "plugins/editor" },
 	{ import = "plugins" },
 	{ import = "plugins/lsp" },
+	{ import = "plugins/debugger" },
 })

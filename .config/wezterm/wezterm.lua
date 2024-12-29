@@ -17,10 +17,11 @@ config.skip_close_confirmation_for_processes_named = {
 }
 
 -- Set up local multiplexing
-config.unix_domains = {
-	{ name = "unix" },
-}
-config.default_gui_startup_args = { "connect", "unix" }
+-- THIS IS BROKEN (not all the time, but domain will randomly hang and I need to kill socket to start up)
+-- config.unix_domains = {
+-- 	{ name = "unix" },
+-- }
+-- config.default_gui_startup_args = { "connect", "unix" }
 
 -- Keybindings
 config.keys = {
