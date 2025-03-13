@@ -32,6 +32,7 @@ return {
           -- because they only work if you have an active language server
 
           vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+          vim.keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, opts)
           vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
 
           -- Use telescope for a lot of the lsp lookups
@@ -50,7 +51,9 @@ return {
             { buffer = bufnr, desc = "Go to type definitions" }
           )
           vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { buffer = bufnr, desc = "Rename" })
-          vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+          vim.keymap.set("n", "<leader>ca", function()
+            vim.lsp.buf.code_action()
+          end, opts)
           -- note: diagnostics are not exclusive to lsp servers
         end,
       })
@@ -66,6 +69,7 @@ return {
 
       require("mason").setup({})
       require("mason-lspconfig").setup({
+        automatic_installation = false,
         ensure_installed = { "lua_ls" },
         handlers = {
           default_setup,

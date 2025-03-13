@@ -24,7 +24,7 @@ return {
               ["<c-x>"] = require("telescope.actions").delete_buffer,
             },
           },
-        }
+        },
       },
       extensions = {
         undo = {
@@ -44,12 +44,15 @@ return {
             },
           },
         },
+        ["ui-select"] = {
+          require("telescope.themes").get_cursor()
+        }
       },
     })
     require("telescope").load_extension("undo")
     require("telescope").load_extension("fzf")
-    require("telescope").load_extension("ui-select")
     require("telescope").load_extension("live_grep_args")
+    require("telescope").load_extension("ui-select")
   end,
   init = function()
     local telescope = require("telescope")

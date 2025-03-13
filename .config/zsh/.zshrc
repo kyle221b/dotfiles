@@ -51,6 +51,7 @@ alias ddt=dd-toolbox
 alias obsidian="vim ~/Documents/vault"
 alias pip=pip3
 alias uuid="uuidgen | tr '[:upper:]' '[:lower:]' | pbcopy"
+alias dbx=databricks
 
 alias cd=z
 alias ls="eza"
@@ -122,6 +123,8 @@ alias tsd="ts down"
 
 alias tf="terraform"
 
+alias hf="huggingface-cli"
+
 alias kill-grpc="lsof -i :50051 | rg \"LISTEN|ESTABLISHED\" | choose 1 | xargs kill -9"
 
 # Completions
@@ -141,6 +144,11 @@ source ~/Projects/personal/fzf-git.sh/fzf-git.sh
 
 # direnv
 eval "$(direnv hook zsh)"
+
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init - zsh)"
 
 function dotsync {
   dot commit -a -m ${1-"Sync dotfiles"}
@@ -195,6 +203,14 @@ function sandbox3 {
 
 function sandbox4 {
   tsh kube login sandbox-cell-004.prod-main-us-west-2
+}
+
+function global {
+  tsh kube login main-00.prod-us-west-2
+}
+
+function staging {
+  tsh kube login main-00.staging-us-west-2
 }
 
 function cell1 {
@@ -262,3 +278,75 @@ function nectar-update {
   done
 }
 
+function update-display-address {
+  source_place_id=$1
+  display_address=$2
+  update_sql="
+update edw.geo.address_global_index 
+set metadata = to_json(
+      iff(
+        parse_json(metadata):display_street_address is null,
+        object_insert(to_object(parse_json(metadata)), 'display_street_address', '$display_address'),
+        object_insert(to_object(parse_json(metadata)), 'display_street_address', '$display_address', true)
+      )
+    ),
+    index_field = array_to_string(
+      array_distinct(
+        array_cat(
+          split(index_field, ' '), 
+          transform(
+            strtok_to_array(upper('$display_address'), ', '),
+            s STRING -> rtrim(s, ',. ')
+          )
+        )
+      ),' ')
+where source_place_id = '$source_place_id';
+"
+
+  echo "Update query:\n$update_sql"
+  read "REPLY?Do you want to proceed? (y/n) "
+  if [[ $REPLY == [yY] ]]; then
+    echo "Executing in Snowflake..."
+    snowsql -q "$update_sql" -o friendly=false -o timing=false -o header=false
+    echo "Fetching document ID..."
+    document_id=$(snowsql -q "select document_id from edw.geo.address_global_index where source_place_id = '$source_place_id';" -o output_format=plain -o friendly=false -o timing=false -o header=false)
+    nectar-update $document_id
+  else
+    echo "Skipping execution..."
+  fi
+}
+
+function add-search-terms {
+  source_place_id=$1
+  search_terms=$2
+  update_sql="
+update edw.geo.address_global_index 
+set index_field = array_to_string(
+  array_distinct(
+    array_cat(
+      split(index_field, ' '), 
+      transform(
+        strtok_to_array(upper('$search_terms'), ', '),
+        s STRING -> rtrim(s, ',. ')
+      )
+    )
+  ),' ')
+where source_place_id = '$source_place_id';
+"
+
+  echo "Update query:\n$update_sql"
+  read "REPLY?Do you want to proceed? (y/n) "
+  if [[ $REPLY == [yY] ]]; then
+    echo "Executing in Snowflake..."
+    snowsql -q "$update_sql" -o friendly=false -o timing=false -o header=false
+    echo "Fetching document ID..."
+    document_id=$(snowsql -q "select document_id from edw.geo.address_global_index where source_place_id = '$source_place_id';" -o output_format=plain -o friendly=false -o timing=false -o header=false)
+    nectar-update $document_id
+  else
+    echo "Skipping execution..."
+  fi
+}
+
+function generate-client-token {
+  ~/geo/bin/python -c "import secrets; print(secrets.token_urlsafe(128))" | tee >(pbcopy)
+}
